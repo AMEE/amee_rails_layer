@@ -4,8 +4,8 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{amee-rails-layer}
-  s.version = "0.1.0"
+  s.name = %q{amee_rails_layer}
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["George Palmer"]
@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
-     "amee-rails-layer.gemspec",
+     "amee_rails_layer.gemspec",
      "lib/amee_rails_layer.rb",
      "lib/amee_rails_layer/amee_carbon_store.rb",
      "lib/amee_rails_layer/amee_category.rb",
