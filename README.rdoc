@@ -15,3 +15,12 @@ This is an rails abstraction layer for projects using the AMEE gem.  It is curre
 == Copyright
 
 Copyright (c) 2010 George Palmer. See LICENSE for details.
+
+
+
+TODO:
+naming of files
+amee dependency specify in gemspec
+any controller abstractions would be good
+documentation
+Sort license
