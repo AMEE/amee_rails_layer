@@ -1,6 +1,6 @@
-= amee-abstraction-layer-gem
+= Rails Abstraction Layer for AMEE
 
-Description goes here.
+This is an rails abstraction layer for projects using the AMEE gem.  It is currently work in progress and not suitable for production use
 
 == Note on Patches/Pull Requests
  
