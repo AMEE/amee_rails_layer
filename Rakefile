@@ -4,7 +4,7 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "amee-rails-layer"
+    gem.name = "amee_rails_layer"
     gem.summary = %Q{An abstraction layer for building applications around the AMEE API}
     gem.description = %Q{We need a longer description of your gem}
     gem.email = "george.palmer@gmail.com"
