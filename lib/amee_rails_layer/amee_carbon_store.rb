@@ -4,7 +4,6 @@ module AmeeCarbonStore
     
     base.module_eval do
       belongs_to :project
-      @@per_page = 10
     end
   end
 
@@ -36,7 +35,6 @@ module AmeeCarbonStore
       write_inheritable_attribute(:type_amount_repeats, true) if options[:type_amount_repeats]
       write_inheritable_attribute(:nameless_entries, true) if options[:nameless]
       write_inheritable_attribute(:has_date_range, true) if options[:has_date_range]
-      cattr_reader :per_page
       
       include AmeeCarbonStore::InstanceMethods
     end
