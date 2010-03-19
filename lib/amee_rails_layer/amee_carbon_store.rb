@@ -1,3 +1,9 @@
+# AmeeCategory:
+# Finish doc in header - need to clear up bit about.  Still a little unsure if correct name for class as
+# it mainly concerns itself with units.  Then go through all changes and make sure got note to test below
+# TODO check @unit_type bit works after renamed from type and also associated private method changes
+# TODO check works with item_value_names and has_alternative_units? as private methods
+
 module AmeeCarbonStore
   def self.included(base)
     base.extend ClassMethods
@@ -69,7 +75,7 @@ module AmeeCarbonStore
     
     # Override this if the amount symbol isn't inferable from the units
     def amount_symbol
-      amee_category.item_value_name(get_units)
+      amee_category.unit_type_from_amee_unit(get_units)
     end
 
     def amount_unit_symbol
@@ -78,7 +84,7 @@ module AmeeCarbonStore
 
     private    
     def units_are_valid
-      errors.add("units", "are not valid") if amee_category.item_value_name(get_units).nil?
+      errors.add("units", "are not valid") if amount_symbol.nil?
     end
     
     def name_is_unique_given_date_range

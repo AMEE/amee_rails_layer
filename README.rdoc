@@ -24,3 +24,8 @@ amee dependency specify in gemspec
 any controller abstractions would be good
 documentation
 Sort license
+
+
+Should be concerned with the following???
+- project
+- 

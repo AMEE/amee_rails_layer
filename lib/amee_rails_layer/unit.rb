@@ -1,3 +1,6 @@
+# Encapsulates the Units used by the AMEE API.  Possible types are currently
+# :km, :miles, :kg, :tonnes, :kwh, :litres and :uk_gallons  Convience class
+# methods are provided to construct an object of each of these types
 class Unit
 
   NAME = {
@@ -19,11 +22,14 @@ class Unit
     :litres => "L",
     :uk_gallons => "gal_uk"
   }
-  
+
+  # Creates a new Unit object from the symbol representing the unit (see class doc)
   def initialize(type, *args)
     @type = type
   end
   
+  # Creates a new Unit class from the string used by AMEE to represent the unit.  For example
+  # pass in "t" to initialize an Unit object for tonnes
   def self.from_amee_unit(unit)
     AMEE_API_UNITS.each do |key, value|
       return new(key) if value == unit
@@ -31,10 +37,12 @@ class Unit
     return nil
   end
   
+  # A human readable form of the unit
   def name
     NAME[@type]
   end
   
+  # The string used by the AMEE API to represent the unit
   def amee_api_unit
     AMEE_API_UNITS[@type]
   end
