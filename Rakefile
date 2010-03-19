@@ -4,9 +4,9 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "amee-abstraction-layer-gem"
+    gem.name = "amee-rails-layer"
     gem.summary = %Q{An abstraction layer for building applications around the AMEE API}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.description = %Q{We need a longer description of your gem}
     gem.email = "george.palmer@gmail.com"
     gem.homepage = "http://github.com/georgepalmer/amee-abstraction-layer-gem"
     gem.authors = ["George Palmer"]
