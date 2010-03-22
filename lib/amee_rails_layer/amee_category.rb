@@ -1,28 +1,40 @@
 require 'amee_rails_layer/unit'
 
-# Encapsulates information on a model type that maps to an AMEE category.  For example in an 
-# application where a project has multiple Journeys, the Journey model would have an AmeeCategory
-# for each type that Journey could take - ie Car, Bus, Van...
-# 
-# See the project README for more information on the structure this gem assumes
+# Encapsulates information on the AMEE category used to store data against.  For example, in an 
+# application where a project has multiple CarTrips the model would have an AmeeCategory
+# representing the chosen Car Category in AMEE.  In an application where a project has a more
+# generic Journey model with multiple possible types the Journey model would have an AmeeCategory
+# for each type that Journey could take - ie Car, Bus, Van...  In both cases the model will need
+# the amee_category method to return the correct AmeeCategory object.  See the project README for 
+# more information on the application structure this gem assumes and how this class interacts with
+# AmeeCarbonStore
 #
-# There are several types the AmeeCategory can be constructed with and these determine what units
-# can be associated with it:
-# * :distance - the total distance
-# * :journey_distance - the distance of the journey, of which there might be many instances
-# * :weight - the total weight
-# * :energy - the energy consumed
-# * :volumable_energy - the energy consumed specified either as a volume or energy unit
+# There are several types the AmeeCategory can be constructed with:
+# * :distance - the total distance (units available are km or mile)
+# * :journey_distance - the distance of the journey (units available are km or miles)
+# * :weight - the total weight (units available are kg or tonned)
+# * :energy - the energy consumed (units available are kWh)
+# * :volumable_energy - the energy consumed specified either as a volume of fuel or energy unit 
+#   (units available are litres or kWh)
 #
-# Note: The values of the ITEM_VALUE_UNIT_TYPES constant (and the keys of the ITEM_VALUE_TYPE_TO_UNIT_MAPPING)
-# are actually used to pass through to the AMEE API the type the amount is being sent in.  For example:
-# if we wanted to send 12 miles, we'd send distance or distancePerJourney as this depending on the type
-# configured in the constructor.
+# The CATEGORY_TYPES constant maps these symbols to the corresponding field names used in amee to
+# store the amount of whatever is being specified.  So for a given data item path you must ensure
+# the item value supports the field named there.  For example: assuming we've gone with 
+# :journey_distance as the type and a path of /transport/bus/generic/defra then this would work as 
+# the amount of miles is specified in the distancePerJourney field in amee.  For 
+# /transport/car/generic/defra/bysize however it would not work as the only available field in amee
+# is distance (so the type :distance must be used).
+#
+# The type also determines the units that instances of the model can be created with.  The available 
+# units are specified in the constant CATEGORY_TYPES_TO_UNITS but are also listed in the bullets
+# above above for convience.  Developers can provide additional units by (manually) passing in a 
+# unit conversion factor in the constructor. See the constructor documentation for more on how to
+# do this.
 class AmeeCategory
   
   attr_accessor :name, :path
   
-  ITEM_VALUE_UNIT_TYPES = {
+  CATEGORY_TYPES = {
     :distance => [:distance],
     :journey_distance => [:distancePerJourney],
     :weight => [:mass],
@@ -30,7 +42,7 @@ class AmeeCategory
     :volumable_energy => [:volumePerTime, :energyConsumption]
   }
 
-  ITEM_VALUE_TYPE_TO_UNIT_MAPPING = {
+  CATEGORY_TYPES_TO_UNITS = {
     :distance => [Unit.km, Unit.miles],
     :distancePerJourney => [Unit.km, Unit.miles],
     :mass => [Unit.kg, Unit.tonnes],
@@ -41,21 +53,22 @@ class AmeeCategory
   # Create an AmeeCategory.  The initializer takes the following parameters:
   # * name - a human readable name to refer to the category by.  This is not used in the storing or
   #   retrieving of data in amee but is useful for exposing in the view where a user chooses the 
-  #   type they would like from the model
-  # * unit_type - either :distance, :journey_distance, :weight, :energy or :volumable_energy  See notes
-  #   in class header for more on this
+  #   type they would like for the model
+  # * category_type - either :distance, :journey_distance, :weight, :energy or :volumable_energy.  See 
+  #   notes in class header for more on this
   # * profile_category_path - the path to the amee category - eg "/transport/car/generic/defra/bysize"
-  # * options - any additional options required with the profile_category_path to make the path refer
-  #   to just one amee categorgy (typically these are passed in as a query string URL in amee explorer).
-  #   For example: {:fuel => "average", :size => "average"}
+  # * options - any additional options required with the profile_category_path to make the path 
+  #   refer to just one amee categorgy (typically these are passed in as a query string URL in amee 
+  #   explorer).  For example: {:fuel => "average", :size => "average"}
+  #   
   #   This option can also take an optional hash for unit conversions, for example:
   #     :unit_conversions => {:kg => [:m3 => 2.5, :abc => 0.3], :xyz => [:efg => 0.6]}
-  #   which would make m3 available as a unit (converted to kg by * 2.5).  The hash keys, :kg and :xyz,
-  #   in this case must map to the unit types provided by the corresponding unit_type option - ie :kg 
-  #   would work if this option was :weight but not :litres
-  def initialize(name, unit_type, profile_category_path, options = {}, *args)
+  #   which would make m3 available as a unit (converted to kg by * 2.5).  The hash keys, :kg and 
+  #   :xyz in this case, must map to the unit types provided by the corresponding category_type 
+  #   option - ie :kg would work if this option was :weight but not :energy
+  def initialize(name, category_type, profile_category_path, options = {}, *args)
     @name = name
-    @unit_type = unit_type
+    @category_type = category_type
     @path = profile_category_path
     @conversions = options.delete(:unit_conversions)
     @path_options = options
@@ -66,21 +79,21 @@ class AmeeCategory
     "/data#{@path}/drill?#{@path_options.to_query}"
   end
 
-  # Returns an array of the available unit names and amee unit string representations.  This
+  # Returns an array of the available unit names and amee api unit string representations.  This
   # will also include any units provided by the user through the unit_conversions option.  The
   # resulting array can be passed straight through to a options_for_select view helper.
   #
-  # For example if the instance is constructed with the :weight unit_type option then this will
-  # produce: [["kg", "kg"], ["tonnes", "t"]]
+  # For example if the instance is constructed with the :weight category_type option then this 
+  # will produce: [["kg", "kg"], ["tonnes", "t"]]
   def unit_options
-    unit_options = item_value_units.map{|unit| [unit.name, unit.amee_api_unit]}
+    unit_options = category_units.map{|unit| [unit.name, unit.amee_api_unit]}
     unit_options += alternative_unit_options if has_alternative_units?
     unit_options
   end
 
-  # Given an AMEE API unit string return the unit type
-  def unit_type_from_amee_unit(amee_unit)
-    item_value_unit_types.each do |type|
+  # Given an AMEE API unit string return the category type
+  def category_type_from_amee_api_unit(amee_unit)
+    category_types.each do |type|
       return type if amee_api_units(type).include?(amee_unit)
     end
     return nil
@@ -113,20 +126,20 @@ class AmeeCategory
   end
   
   private
-  def item_value_unit_types
-    ITEM_VALUE_UNIT_TYPES[@unit_type]
+  def category_types
+    CATEGORY_TYPES[@category_type]
+  end
+  
+  def category_units
+    category_types.map{|t| CATEGORY_TYPES_TO_UNITS[t]}.flatten
   end
   
   def has_alternative_units?
     !@conversions.nil?
   end
   
-  def item_value_units
-    item_value_unit_types.map{|t| ITEM_VALUE_TYPE_TO_UNIT_MAPPING[t]}.flatten
-  end
-  
   def amee_api_units(name)
-    ITEM_VALUE_TYPE_TO_UNIT_MAPPING[name].map{|u| u.amee_api_unit}
+    CATEGORY_TYPES_TO_UNITS[name].map{|u| u.amee_api_unit}
   end
   
   def alternative_units_to_conversions

@@ -1,8 +1,9 @@
 # AmeeCategory:
-# Finish doc in header - need to clear up bit about.  Still a little unsure if correct name for class as
-# it mainly concerns itself with units.  Then go through all changes and make sure got note to test below
+# TODO check logic for unit conversion is correct.  Look at extra methods in models in overbury, would 
+#      changes made break any of that?  Put into OS branch and test
 # TODO check @unit_type bit works after renamed from type and also associated private method changes
 # TODO check works with item_value_names and has_alternative_units? as private methods
+# Remove include AmeeCarbonStore and in models add @@per_page and cattr_reader :per_page [opensource branch, done nesta one]
 
 module AmeeCarbonStore
   def self.included(base)
@@ -75,7 +76,7 @@ module AmeeCarbonStore
     
     # Override this if the amount symbol isn't inferable from the units
     def amount_symbol
-      amee_category.unit_type_from_amee_unit(get_units)
+      amee_category.category_type_from_amee_api_unit(get_units)
     end
 
     def amount_unit_symbol
@@ -161,6 +162,7 @@ module AmeeCarbonStore
     end
     
     def get_amount
+      # TODO what if both??
       if amee_category.has_alternative_unit?(self.units)
         self.amount * amee_category.alternative_unit_conversion_factor(self.units)
       elsif self.class.read_inheritable_attribute(:type_amount_repeats)

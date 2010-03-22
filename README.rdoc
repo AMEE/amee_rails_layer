@@ -23,8 +23,9 @@ naming of files
 amee dependency specify in gemspec
 any controller abstractions would be good
 documentation
+Doc how can have one AmeeCategory for a model or lots if can choose type
 Sort license
-
+AmeeCarbonStore - make sure all doc + code within 100 chars
 
 Should be concerned with the following???
 - project
