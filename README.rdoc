@@ -26,6 +26,7 @@ documentation
 Doc how can have one AmeeCategory for a model or lots if can choose type
 Sort license
 AmeeCarbonStore - make sure all doc + code within 100 chars
+Nesta and OS app deploy on app store (servers will need the gem first)
 
 Should be concerned with the following???
 - project

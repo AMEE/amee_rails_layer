@@ -1,10 +1,14 @@
 # AmeeCategory:
+# TODO need belongs_to in models or doesn't work due to models reloading and gem not so loses association
+#      question is why?
+
 # TODO check logic for unit conversion is correct.  Look at extra methods in models in overbury, would 
 #      changes made break any of that?  Put into OS branch and test
 # TODO check @unit_type bit works after renamed from type and also associated private method changes
 # TODO check works with item_value_names and has_alternative_units? as private methods
-# Remove include AmeeCarbonStore and in models add @@per_page and cattr_reader :per_page [opensource branch, done nesta one]
-
+# TODO also anything common in nesta branch in controllers?  Wouldn't normally extract in gem but worth a quick look
+# Remove include AmeeCarbonStore and in models add @@per_page and cattr_reader :per_page
+# TODO belonging to project - can be optional or defineable somehow?
 module AmeeCarbonStore
   def self.included(base)
     base.extend ClassMethods
