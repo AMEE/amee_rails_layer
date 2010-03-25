@@ -1,10 +1,10 @@
 # AmeeCategory:
-# TODO need belongs_to in models or doesn't work due to models reloading and gem not so loses association
-#      question is why?
+# TODO Once done test nesta working, then do OS branch and test that.  Finally check
+#      over any extra logic in Overbury models and see if anything missing
 
 # TODO check logic for unit conversion is correct.  Look at extra methods in models in overbury, would 
-#      changes made break any of that?  Put into OS branch and test
-# TODO check @unit_type bit works after renamed from type and also associated private method changes
+#      changes made break any of that?
+# TODO check @category_type bit works after renamed from type and also associated private method changes
 # TODO check works with item_value_names and has_alternative_units? as private methods
 # TODO also anything common in nesta branch in controllers?  Wouldn't normally extract in gem but worth a quick look
 # Remove include AmeeCarbonStore and in models add @@per_page and cattr_reader :per_page
@@ -12,14 +12,12 @@
 module AmeeCarbonStore
   def self.included(base)
     base.extend ClassMethods
-    
-    base.module_eval do
-      belongs_to :project
-    end
   end
 
   module ClassMethods
     def has_carbon_data_stored_in_amee(options = {})
+      belongs_to :project
+      
       validates_numericality_of :amount
       validate_on_create :units_are_valid
       unless options[:nameless]
