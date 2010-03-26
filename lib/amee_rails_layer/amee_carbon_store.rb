@@ -50,7 +50,8 @@ module AmeeCarbonStore
         else
           validates_uniqueness_of :name, :scope => :project_id
         end
-        validates_format_of :name, :with => /\A[\w -]+\Z/, :message => "must be letters, numbers, spaces or underscores only"
+        validates_format_of :name, :with => /\A[\w -]+\Z/, 
+          :message => "must be letters, numbers, spaces or underscores only"
         validates_length_of :name, :maximum => 250
       end
       if options[:singular_types]

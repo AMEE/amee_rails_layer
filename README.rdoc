@@ -18,22 +18,18 @@ Copyright (c) 2010 George Palmer. See LICENSE for details.
 
 
 TODO:
-# TODO rename repetitions option so change nesta and opensource project and test
-# TODO can we have where don't need belongs_to project?  Think so.  Option to rename project
-# TODO Would have to check no namespace collisions
-# TODO when sort naming for this update singular_types notes on has_carbon_data_stored_in_amee and project_id in header
-# TODO if remove project condition name_is_unique_given_date_range and maximum_one_instance_for_each_type
-
-- opensource_fix branch can be removed
-- also anything common in nesta branch in controllers?  Wouldn't normally extract in gem but worth a quick look
-- belonging to project - make this class defineable
-- overall don't forget project class needs that amee gem included.  Could actually create base Project class?
+- overall don't forget project class needs that amee gem included.
+  write how can have one AmeeCategory for a model or lots if can choose type
   more doc notes - waste model in OS branch is good example of how model can look (with extra options).  Also doc
-  the cronjob and why needed
-- Say need certain database fields - see AmeeCarbonStore for details
-- AmeeCarbonStore - make sure all doc + code within 100 chars
+  the cronjob and why needed (bit of that below)
+  Say need certain database fields for this to work - see AmeeCarbonStore for details
+  when sort naming for this update singular_types notes on has_carbon_data_stored_in_amee and project_id in header
 - amee dependency specify in gemspec
-- write this readme, including how can have one AmeeCategory for a model or lots if can choose type
+- If have time sort + test so don't project association
+  Can we have where don't need belongs_to project?  Think so.  Option to rename project filters down to belongs_to
+   Would have to check no namespace collisions
+   If remove project condition name_is_unique_given_date_range and maximum_one_instance_for_each_type methods need sorting
+- opensource_fix branch can be removed
 - sort license
 - Push changes to nesta and open source branches.  Has nesta branch still got lib files there?  This got really confused at one point - must test name_is_unique_given_date_range method as made change there - create a 'Diesel' row and then check doesn't allow to create again in same project, but does in a new one
 - Nesta and OS app deploy on app store (servers will need the gem first)
