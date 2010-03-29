@@ -10,7 +10,7 @@ begin
     gem.email = "george.palmer@gmail.com"
     gem.homepage = "http://github.com/georgepalmer/amee-abstraction-layer-gem"
     gem.authors = ["George Palmer"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
+    gem.add_development_dependency "amee-ruby", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new

@@ -1,13 +1,12 @@
 require 'amee_rails_layer/unit'
 
 # Encapsulates information on the AMEE category used to store data against.  For example, in an 
-# application where a project has multiple CarTrips the model would have an AmeeCategory
-# representing the chosen Car Category in AMEE.  In an application with a more generic Journey
-# model with multiple possible types, the Journey model would have an AmeeCategory for each type
-# that Journey could take - ie Car, Bus, Van...  In both cases the model will need the 
-# amee_category method to return the correct AmeeCategory object.  See the gem README for more 
-# information on the application structure this gem assumes and how this class interacts with
-# AmeeCarbonStore
+# application modelling Car Trips the model would have an AmeeCategory representing the chosen Car
+# Category in AMEE.  In an application with a more generic Journey model with multiple possible 
+# types, the Journey model would have an AmeeCategory for each type that Journey could take - ie 
+# Car, Bus, Van...  In all cases the model will need the amee_category method to return the correct
+# AmeeCategory object as described in AmeeCarbonStore.  See the README for more information on the
+# application structure this gem assumes and examples of how to use it.
 #
 # There are several types the AmeeCategory can be constructed with:
 # * :distance - the total distance (units available are km or mile)

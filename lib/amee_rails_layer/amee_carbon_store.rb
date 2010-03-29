@@ -2,14 +2,15 @@
 # automatically included in ActiveRecord::Base object when used with Rails.  See the gem
 # README for more information on the application structure this gem assumes.
 # 
-# Classes that call has_carbon_data_stored_in_amee require the following database columns:
+# Classes that have the has_carbon_data_stored_in_amee decleartion require the following
+# database columns:
 # * name (string) - a name for the object, often set by user but can be assinged automatically
 # * amee_profile_item_id (string) - the AMEE profile Item ID used to store the carbon data
 # * carbon_output_cache (float) - the amount of carbon produced
 # * units (string) - the units the amount field is in
 # * amount (float) - the amount of the thing being recorded, eg 6 (kg), 9 (litres)
 # * project_id (integer) - optional.  Used when the model belongs_to a parent that has a
-#   has_amee_profile call.  Name can be changed by passing appropriate option
+#   has_amee_profile decleration.  Name can be changed by passing appropriate option
 #   to has_carbon_data_stored_in_amee
 # * repetitions (integer) - optional.  Used when the model object is composed of several
 #   repetitions - for example 6 x 3 miles would make the repetitions 6  
@@ -32,12 +33,12 @@ module AmeeCarbonStore
     #   therefore not recommended as it will be easy to create overlapping data).  Requires the 
     #   start_date and end_date database fields as described in header.
     # * repetitions - allows repetitions of the data at a database level where AMEE doesn't support
-    #   it.  For example multiple journeys can be setup with this option.  The value stored in AMEE
-    #   will be the total for all journeys.  Requires the repetitions database field as described 
-    #   in header.
+    #   it natively.  For example multiple journeys can be setup with this option.  The value stored
+    #   in AMEE will be the total for all journeys.  Requires the repetitions database field as 
+    #   described in header.
     # * singular_types - if using a structure where multiple types are available for a model and 
-    #   are stored in the field "#{model}_type", this option enforces that only one instance of 
-    #   each type may exist in the database (for a given project if using a project structure)
+    #   the type is stored in the field "#{model}_type", this option enforces that only one instance
+    #   of each type may exist in the database (for a given project if using a project structure)
     def has_carbon_data_stored_in_amee(options = {})
       belongs_to :project
       
@@ -183,7 +184,7 @@ module AmeeCarbonStore
     end
     
     def amee_profile_path
-      project.profile_path
+      "/profiles/#{project.amee_profile}"
     end
 
     def amee_profile_item
