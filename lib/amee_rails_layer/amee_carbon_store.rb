@@ -4,7 +4,7 @@
 # 
 # Classes that have the has_carbon_data_stored_in_amee decleartion require the following
 # database columns:
-# * name (string) - a name for the object, often set by user but can be assinged automatically
+# * name (string) - a name for the object, often set by user but can be assigned automatically
 # * amee_profile_item_id (string) - the AMEE profile Item ID used to store the carbon data
 # * carbon_output_cache (float) - the amount of carbon produced
 # * units (string) - the units the amount field is in

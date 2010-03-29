@@ -1,7 +1,5 @@
-= Rails Abstraction Layer for AMEE
-
-This gem, the rails abstraction layer, provides a series of common abstractions that are typically used 
-when creating rails models that store carbon data in AMEE.  This is an opinionated gem and whilst it will 
+The rails abstraction layer gem provides a series of common abstractions that are typically used when
+creating rails models that store carbon data in AMEE.  This is an opinionated gem and whilst it will 
 suit a lot of projects well it will not be right for every project.  In those cases use the lower level 
 amee-ruby gem (http://github.com/floppy/amee-ruby).
 
@@ -13,24 +11,32 @@ Command line installation:
 
 == Configuration
 
-The models that are to store 
+For models that store carbon data in AMEE, several additional fields required in the database.  Normally
+these would be:
+  * name (string) - a name for the object, often set by user but can be assigned automatically
+  * amee_profile_item_id (string) - the AMEE profile Item ID used to store the carbon data
+  * carbon_output_cache (float) - the amount of carbon produced
+  * units (string) - the units the amount field is in
+  * amount (float) - the amount of the thing being recorded, eg 6 (kg), 9 (litres)
+but extra fields may be required depending on the options used.  See AmeeCarbonStore for full details
 
 == Usage
 
-Currently the gem assumes that the rails application has a structure where a Project model that has_many
+Currently the gem assumes that the rails application has a structure where a Project model has has_many
 associations with models that wish to store carbon data in AMEE.  This is a hangover from the application
-this gem was originally created for and this requirement will ultimately be removed.  The restructuring
-work for that has already taken place but in the meantime a Project model is required that has the
-has_amee_profile declaration introduced by the amee-ruby gem.  The models that wish to store their data in
-AMEE should belong_to the Project and will use it's AMEE profile to store data under.
+this gem was originally extracted from and will ultimately be removed.  In the meantime a Project model
+is required that has the has_amee_profile declaration made available by the amee-ruby gem.  The models
+that wish to store their data in AMEE should belong_to the Project model and will use it's AMEE profile
+to store data under.
 
-The models need the has_carbon_data_stored_in_amee declaration with any appropriate options (see rdoc
-for the method for details) and must implement the amee_category method.  For this, there are two main
+The models that are to store carbon data in AMEE need the has_carbon_data_stored_in_amee declaration with
+any appropriate options and must implement the amee_category method.  For this, there are two main
 options:
+
 1) If the model is always the same type just return a AmeeCategory with relevant options for where the
-   data should be stored in AMEE
+data should be stored in AMEE
 2) If the model has multiple types, for example a Journey that can be a Car, Bus Journey etc, a pattern
-   like the following can be used:
+like the following can be used:
    
    class Journey < ActiveRecord::Base
      TYPE = {
@@ -44,12 +50,21 @@ options:
      end
    end
      
-   Note the need for a column called journey_type in the database to store the type of the Journey.
+Note the need for a column called journey_type in the database to store the type of the Journey.
 
-As the carbon amount (TODO explain this earlier) is cached in the database to reduce load on the 
-AMEE API and speed up the local application, the carbon output value should be updated by a cronjob
-at a regular interval.  This is because AMEE alters the underlying calculations as more accurate 
-data and formulas becomes available.  See AmeeCarbonStore#update_carbon_caches for more details.
+The database caches the carbon value returned by AMEE to keep the local application fast when
+displaying this data.  As a result of this a cronjob should be run at a regular interval to update
+the carbon value.  This is because AMEE alters the underlying calculations as more accurate data 
+and formulas becomes available.  See AmeeCarbonStore#update_carbon_caches for more details.
+
+== Note on Patches/Pull Requests
+ 
+* Fork the project.
+* Make your feature addition or bug fix.
+* Add tests for it. This is important so I don't break it in a future version unintentionally.
+* Commit, do not mess with rakefile, version, or history (if you want to have your own version, that is fine 
+  but bump version in a commit by itself I can ignore when I pull)
+* Send me a pull request. Bonus points for topic branches.
 
 == TODO
 * Remove need for Project model with associations to models that store carbon data.  The project
@@ -62,18 +77,9 @@ data and formulas becomes available.  See AmeeCarbonStore#update_carbon_caches f
   has_carbon_data_stored_in_amee doc.
 * Full test coverage
 
-== Note on Patches/Pull Requests
- 
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a future version unintentionally.
-* Commit, do not mess with rakefile, version, or history (if you want to have your own version, that is fine 
-  but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
-
 == Copyright
 
-Copyright (c) 2010 Amee ltd. See LICENSE for details.
+Copyright (c) 2010 AMEE UK ltd. See LICENSE for details.
 
 
 TODO:
