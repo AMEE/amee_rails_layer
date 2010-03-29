@@ -81,11 +81,3 @@ and formulas becomes available.  See AmeeCarbonStore#update_carbon_caches for mo
 == Copyright
 
 Copyright (c) 2010 AMEE UK ltd. See LICENSE for details.
-
-
-TODO:
-- amee_profile_path method should remove need for Profile#profile_path method - test and remove from template projects
-- sort license and add license file
-- opensource_fix branch can be removed
-- Push changes to nesta and open source branches.  Has nesta branch still got lib files there?  This got really confused at one point - must test name_is_unique_given_date_range method as made change there - create a 'Diesel' row and then check doesn't allow to create again in same project, but does in a new one
-- Nesta and OS app deploy on app store (servers will need the gem first)
