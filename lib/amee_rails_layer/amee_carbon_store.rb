@@ -31,8 +31,8 @@ module AmeeCarbonStore
     # * profile - if set will use this model (through a belongs_to relationship) to access the amee
     #   profile to store the data under rather than the model itself.  Pass the model to use as symbol
     #   - eg :user or :project.  Introduces the need for the profile_id field as described in header
-    #   and must store the amee profile key under the field amee_profile (as would be provided by the
-    #   has_amee_profile decleration)
+    #   and the referenced model must store the amee profile key under the field amee_profile (as 
+    #   would be provided by the has_amee_profile decleration)
     # * nameless - if set then automatically assign the name field so the user doesn't have to
     #   (still requires the name field in the database as a name must be set to store in amee)
     # * has_date_range - will check for the presence of a start_date and end_date on the object

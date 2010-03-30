@@ -25,12 +25,17 @@ Extra fields may also be required depending on the options used.  See AmeeCarbon
 
 == Usage
 
-Currently the gem assumes that the rails application has a structure where a Project model has has_many
-associations with models that wish to store carbon data in AMEE.  This is a hangover from the application
-this gem was originally extracted from and will ultimately be removed.  In the meantime a Project model
-is required that has the has_amee_profile declaration made available by the amee-ruby gem.  The models
-that wish to store their data in AMEE should belong_to the Project model and will use it's AMEE profile
-to store data under.
+All data in AMEE is stored under a profile and there are two ways to encapsulate this knowledge in your
+application:
+
+1) Models belong_to another object that has the amee_profile.  Exactly what this parent model will be 
+depends on the application, but common examples will be Project or User.
+
+2) Each model has its own profile.
+
+The best way to determine which approach to take is to read the AMEE documentation (link at end of 
+README) and see which unit in the application logically maps to an AMEE profile.  In either case the
+model will require an amee_profile field to store the profile identifier.
 
 The models that are to store carbon data in AMEE need the has_carbon_data_stored_in_amee declaration with
 any appropriate options and must implement the amee_category method.  For this, there are two main
@@ -61,6 +66,8 @@ displaying this data.  As a result of this a cronjob should be run at a regular 
 the carbon value.  This is because AMEE alters the underlying calculations as more accurate data 
 and formulas becomes available.  See AmeeCarbonStore#update_carbon_caches for more details.
 
+Further information on AMEE can be found at: http://my.amee.com/developers/
+
 == Note on Patches/Pull Requests
  
 * Fork the project.
@@ -71,15 +78,9 @@ and formulas becomes available.  See AmeeCarbonStore#update_carbon_caches for mo
 * Send me a pull request. Bonus points for topic branches.
 
 == TODO
-* whatever amee profile is in your system - e.g. user etc, also point to amee dev docs somewhere in readme
-Update doc for configuration section in README (as DB will 
-  require extra fields), Usage section in README (as no longer compulsory) and the method.  No longer
-  need has_amee_profile but need to note need to create DB field
-  has_carbon_data_stored_in_amee doc.  Check for project references in AmeeCarbonStore doc
-  push changes
 * Integrate rails.rb from amee-ruby   In AmeeCarbonStore has_amee_profile call can be removed from
   the has_carbon_data_stored_in_amee method and connection_to_amee can be named back to the more
-  logical amee_connection
+  logically amee_connection
 * Full test coverage
 
 == Copyright
