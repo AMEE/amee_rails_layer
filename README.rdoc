@@ -20,7 +20,7 @@ these would be:
   * amount (float) - the amount of the thing being recorded, eg 6 (kg), 9 (litres)
 with either:
   * amee_profile (string) - the AMEE profile identifier under which all data is stored
-  * or profile_id (integer) - the record id of the model holding the amee_profile
+  * or profile_id (integer) - the record id of the model holding the amee_profile (and of course that model to have an amee_profile field)
 Extra fields may also be required depending on the options used.  See AmeeCarbonStore for full details
 
 == Usage
@@ -28,10 +28,11 @@ Extra fields may also be required depending on the options used.  See AmeeCarbon
 All data in AMEE is stored under a profile and there are two ways to encapsulate this knowledge in your
 application:
 
-1) Models belong_to another object that has the amee_profile.  Exactly what this parent model will be 
-depends on the application, but common examples will be Project or User.
+1) Models belong_to another object that has the amee_profile.  Exactly what this parent will be called 
+will depend on the application, but common examples will be Project or User.  In this case it is up to
+the developer to add the has_amee_profile declaration to this class.
 
-2) Each model has its own profile.
+2) Each model has its own profile.  The has_amee_profile declaration is handled automatically.
 
 The best way to determine which approach to take is to read the AMEE documentation (link at end of 
 README) and see which unit in the application logically maps to an AMEE profile.  In either case the
@@ -66,7 +67,7 @@ displaying this data.  As a result of this a cronjob should be run at a regular 
 the carbon value.  This is because AMEE alters the underlying calculations as more accurate data 
 and formulas becomes available.  See AmeeCarbonStore#update_carbon_caches for more details.
 
-Further information on AMEE can be found at: http://my.amee.com/developers/
+Further information on AMEE can be found at: http://my.amee.com/developers
 
 == Note on Patches/Pull Requests
  
