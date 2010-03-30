@@ -9,9 +9,12 @@
 # * carbon_output_cache (float) - the amount of carbon produced
 # * units (string) - the units the amount field is in
 # * amount (float) - the amount of the thing being recorded, eg 6 (kg), 9 (litres)
-# * project_id (integer) - optional.  Used when the model belongs_to a parent that has a
-#   has_amee_profile decleration.  Name can be changed by passing appropriate option
-#   to has_carbon_data_stored_in_amee
+# * amee_profile (string) - optional.  The amee profile identifier under which all the data
+#   is stored.  Although this field is optional, either this or profile_id is required
+# * profile_id (integer) - optional.  Used when the model belongs_to a parent that has the
+#   amee_profile identifier.  Name is changed according to the :profile option passed into 
+#   the has_carbon_data_stored_in_amee.  Although this field is optional, either this or 
+#   amee_profile is required.
 # * repetitions (integer) - optional.  Used when the model object is composed of several
 #   repetitions - for example 6 x 3 miles would make the repetitions 6  
 # * start_date (date) - optional.  Used in combination with the has_date_range option on
@@ -25,6 +28,11 @@ module AmeeCarbonStore
 
   module ClassMethods
     # Class method that configures a class for storing carbon data in amee.  Options are as follows:
+    # * profile - if set will use this model (through a belongs_to relationship) to access the amee
+    #   profile to store the data under rather than the model itself.  Pass the model to use as symbol
+    #   - eg :user or :project.  Introduces the need for the profile_id field as described in header
+    #   and must store the amee profile key under the field amee_profile (as would be provided by the
+    #   has_amee_profile decleration)
     # * nameless - if set then automatically assign the name field so the user doesn't have to
     #   (still requires the name field in the database as a name must be set to store in amee)
     # * has_date_range - will check for the presence of a start_date and end_date on the object
@@ -40,7 +48,12 @@ module AmeeCarbonStore
     #   the type is stored in the field "#{model}_type", this option enforces that only one instance
     #   of each type may exist in the database (for a given project if using a project structure)
     def has_carbon_data_stored_in_amee(options = {})
-      belongs_to :project
+      
+      if options[:profile]
+        belongs_to options[:profile]
+      else
+        has_amee_profile
+      end
       
       validates_numericality_of :amount
       validate_on_create :units_are_valid
@@ -49,7 +62,8 @@ module AmeeCarbonStore
         if options[:has_date_range]
           validate :name_is_unique_given_date_range
         else
-          validates_uniqueness_of :name, :scope => :project_id
+          uniqueness_options = options[:profile] ? {:scope => "#{options[:profile]}_id".to_sym} : {}
+          validates_uniqueness_of :name, uniqueness_options
         end
         validates_format_of :name, :with => /\A[\w -]+\Z/, 
           :message => "must be letters, numbers, spaces or underscores only"
@@ -66,6 +80,7 @@ module AmeeCarbonStore
       before_update :update_amee
       after_destroy :delete_from_amee
       
+      write_inheritable_attribute(:amee_profile_class, options[:profile]) if options[:profile]
       write_inheritable_attribute(:repetitions, true) if options[:repetitions]
       write_inheritable_attribute(:nameless_entries, true) if options[:nameless]
       write_inheritable_attribute(:has_date_range, true) if options[:has_date_range]
@@ -132,7 +147,8 @@ module AmeeCarbonStore
     end
     
     def name_is_unique_given_date_range
-      self.class.find(:all, :conditions => {:project_id => project.id, :name => self.name}).each do |record|
+      conditions = amee_profile_class_scoping.merge(:name => self.name)
+      self.class.find(:all, :conditions => conditions).each do |record|
         next if record.id == self.id
         unless (self.start_date < record.start_date && self.end_date <= record.start_date) ||
                (self.start_date >= record.end_date && self.end_date > record.end_date)
@@ -144,7 +160,8 @@ module AmeeCarbonStore
 
     def maximum_one_instance_for_each_type
       model_type = "#{self.class.name.underscore}_type".to_sym
-      if self.class.send(:find, :first, :conditions => {:project_id => project.id, model_type => send(model_type)})
+      conditions = amee_profile_class_scoping.merge(model_type => send(model_type))
+      if self.class.send(:find, :first, :conditions => conditions)
         errors.add_to_base "Only one #{amee_category.name} entry allowed"
       end
     end
@@ -157,14 +174,14 @@ module AmeeCarbonStore
     end
     
     def update_amee
-      result = AMEE::Profile::Item.update(amee_connection, amee_profile_item_path, 
+      result = AMEE::Profile::Item.update(connection_to_amee, amee_profile_item_path, 
         :name => get_name, amount_symbol => get_amount, :get_item => true)
       self.carbon_output_cache = result.total_amount
       return true
     end
 
     def delete_from_amee
-      AMEE::Profile::Item.delete(amee_connection, amee_profile_item_path)
+      AMEE::Profile::Item.delete(connection_to_amee, amee_profile_item_path)
     rescue Exception => e
       logger.error "Unable to remove '#{amee_profile_item_path}' from AMEE"
     end
@@ -179,16 +196,24 @@ module AmeeCarbonStore
       AMEE::Profile::Item.create(amee_profile_category, amee_data_category_uid, options)
     end
 
-    def amee_connection
-      project.amee_connection
+    # TODO can be renamed to amee_connection once ruby-amee rails lib merged in
+    def connection_to_amee
+      method = self.class.read_inheritable_attribute(:amee_profile_class)
+      method ? send(method).amee_connection : amee_connection
     end
     
     def amee_profile_path
-      "/profiles/#{project.amee_profile}"
+      method = self.class.read_inheritable_attribute(:amee_profile_class)
+      method ? "/profiles/#{send(method).amee_profile}" : "/profiles/#{amee_profile}"
+    end
+    
+    def amee_profile_class_scoping
+      method = self.class.read_inheritable_attribute(:amee_profile_class)
+      method ? {"#{method}_id".to_sym => send(method).id} : {}
     end
 
     def amee_profile_item
-      @amee_profile_item_cache ||= AMEE::Profile::Item.get(amee_connection, 
+      @amee_profile_item_cache ||= AMEE::Profile::Item.get(connection_to_amee, 
         amee_profile_item_path)
     end
 
@@ -197,12 +222,12 @@ module AmeeCarbonStore
     end
     
     def amee_profile_category
-      AMEE::Profile::Category.get(amee_connection, "#{amee_profile_path}#{amee_category.path}")
+      AMEE::Profile::Category.get(connection_to_amee, "#{amee_profile_path}#{amee_category.path}")
     end
 
     def amee_data_category_uid
       Rails.cache.fetch("#{DRILLDOWN_CACHE_PREFIX}_#{amee_category.drill_down_path.gsub(/[^\w]/, '')}") do
-        AMEE::Data::DrillDown.get(amee_connection, amee_category.drill_down_path).choices.first
+        AMEE::Data::DrillDown.get(connection_to_amee, amee_category.drill_down_path).choices.first
       end
     end
 

@@ -18,7 +18,10 @@ these would be:
   * carbon_output_cache (float) - the amount of carbon produced
   * units (string) - the units the amount field is in
   * amount (float) - the amount of the thing being recorded, eg 6 (kg), 9 (litres)
-but extra fields may be required depending on the options used.  See AmeeCarbonStore for full details
+with either:
+  * amee_profile (string) - the AMEE profile identifier under which all data is stored
+  * or profile_id (integer) - the record id of the model holding the amee_profile
+Extra fields may also be required depending on the options used.  See AmeeCarbonStore for full details
 
 == Usage
 
@@ -68,14 +71,15 @@ and formulas becomes available.  See AmeeCarbonStore#update_carbon_caches for mo
 * Send me a pull request. Bonus points for topic branches.
 
 == TODO
-* Remove need for Project model with associations to models that store carbon data.  The project
-  association should become an option on has_carbon_data_stored_in_amee which will allow it to be
-  named as any class.  The project references in AmeeCarbonStore have been pulled into methods so
-  it should be easy to make these points conditional depending on whether user has configured for
-  usage with project or not.  If they configure without project we should auto-inject the 
-  has_amee_profile decleration.  Update doc for configuration section in README (as DB will 
-  require extra fields), Usage section in README (as no longer compulsory) and the method
-  has_carbon_data_stored_in_amee doc.
+* whatever amee profile is in your system - e.g. user etc, also point to amee dev docs somewhere in readme
+Update doc for configuration section in README (as DB will 
+  require extra fields), Usage section in README (as no longer compulsory) and the method.  No longer
+  need has_amee_profile but need to note need to create DB field
+  has_carbon_data_stored_in_amee doc.  Check for project references in AmeeCarbonStore doc
+  push changes
+* Integrate rails.rb from amee-ruby   In AmeeCarbonStore has_amee_profile call can be removed from
+  the has_carbon_data_stored_in_amee method and connection_to_amee can be named back to the more
+  logical amee_connection
 * Full test coverage
 
 == Copyright
