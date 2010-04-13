@@ -38,7 +38,9 @@ class AmeeCategory
     :journey_distance => [:distancePerJourney],
     :weight => [:mass],
     :energy => [:energyConsumption],
-    :volumable_energy => [:volumePerTime, :energyConsumption]
+    :volumable_energy => [:volumePerTime, :energyConsumption],
+    :volume => [:volumePerTime],
+    :weight_or_volume => [:mass, :volumePerTime]
   }
 
   CATEGORY_TYPES_TO_UNITS = {

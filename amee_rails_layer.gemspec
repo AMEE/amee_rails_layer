@@ -5,13 +5,13 @@
 
 Gem::Specification.new do |s|
   s.name = %q{amee_rails_layer}
-  s.version = "0.3.0"
+  s.version = "0.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["George Palmer"]
-  s.date = %q{2010-03-30}
-  s.description = %q{We need a longer description of your gem}
-  s.email = %q{george.palmer@gmail.com}
+  s.authors = ["George Palmer", "James Smith"]
+  s.date = %q{2010-04-13}
+  s.description = %q{An abstraction layer for building applications around the AMEE API}
+  s.email = %q{help@amee.com}
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
      "test/helper.rb",
      "test/test_amee-abstraction-layer-gem.rb"
   ]
-  s.homepage = %q{http://github.com/georgepalmer/amee-abstraction-layer-gem}
+  s.homepage = %q{http://github.com/AMEE/amee_rails_layer}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.6}
