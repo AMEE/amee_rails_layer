@@ -36,11 +36,11 @@ class AmeeCategory
   CATEGORY_TYPES = {
     :distance => [:distance],
     :journey_distance => [:distancePerJourney],
-    :weight => [:mass],
+    :weight => [:massPerTime],
     :energy => [:energyConsumption],
     :volumable_energy => [:volumePerTime, :energyConsumption],
     :volume => [:volumePerTime],
-    :weight_or_volume => [:mass, :volumePerTime]
+    :weight_or_volume => [:massPerTime, :volumePerTime]
   }
 
   CATEGORY_TYPES_TO_UNITS = {
