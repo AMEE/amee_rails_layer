@@ -46,7 +46,7 @@ class AmeeCategory
   CATEGORY_TYPES_TO_UNITS = {
     :distance => [Unit.km, Unit.miles],
     :distancePerJourney => [Unit.km, Unit.miles],
-    :mass => [Unit.kg, Unit.tonnes],
+    :massPerTime => [Unit.kg, Unit.tonnes],
     :energyConsumption => [Unit.kwh],
     :volumePerTime => [Unit.litres],
   }
