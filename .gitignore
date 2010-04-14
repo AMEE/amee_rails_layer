@@ -17,5 +17,7 @@ tmtags
 coverage
 rdoc
 pkg
+nbproject
+*.gem
 
 ## PROJECT::SPECIFIC
