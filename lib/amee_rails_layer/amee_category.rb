@@ -34,21 +34,23 @@ class AmeeCategory
   attr_accessor :name, :path
   
   CATEGORY_TYPES = {
-    :distance => [:distance],
+    :distance         => [:distance],
     :journey_distance => [:distancePerJourney],
-    :weight => [:massPerTime],
-    :energy => [:energyConsumption],
+    :weight           => [:massPerTime],
+    :weight_mass      => [:mass],
+    :energy           => [:energyConsumption],
     :volumable_energy => [:volumePerTime, :energyConsumption],
-    :volume => [:volumePerTime],
+    :volume           => [:volumePerTime],
     :weight_or_volume => [:massPerTime, :volumePerTime]
   }
 
   CATEGORY_TYPES_TO_UNITS = {
-    :distance => [Unit.km, Unit.miles],
+    :distance           => [Unit.km, Unit.miles],
     :distancePerJourney => [Unit.km, Unit.miles],
-    :massPerTime => [Unit.kg, Unit.tonnes],
-    :energyConsumption => [Unit.kwh],
-    :volumePerTime => [Unit.litres],
+    :mass               => [Unit.kg, Unit.tonnes],
+    :massPerTime        => [Unit.kg, Unit.tonnes],
+    :energyConsumption  => [Unit.kwh],
+    :volumePerTime      => [Unit.litres],
   }
   
   # Create an AmeeCategory.  The initializer takes the following parameters:

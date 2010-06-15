@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{amee_rails_layer}
-  s.version = "0.3.4"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["George Palmer", "James Smith"]
-  s.date = %q{2010-04-29}
+  s.date = %q{2010-06-15}
   s.description = %q{An abstraction layer for building applications around the AMEE API}
   s.email = %q{help@amee.com}
   s.extra_rdoc_files = [
