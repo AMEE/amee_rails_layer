@@ -22,7 +22,7 @@ class Unit
     :kwh => "kWh",
     :litres => "L",
     :uk_gallons => "gal_uk",
-    :flights => "journeys"
+    :flights => "nil"
   }
 
   # Creates a new Unit object from the symbol representing the unit (see class doc)
