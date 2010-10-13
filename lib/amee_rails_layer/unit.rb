@@ -11,7 +11,7 @@ class Unit
     :kwh => "kWh",
     :litres => "litres",
     :uk_gallons => "UK Gallons",
-    :flights => "one-way flights"
+    :flights => "return flights"
   }
 
   AMEE_API_UNITS = {
