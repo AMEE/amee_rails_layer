@@ -43,7 +43,7 @@ class AmeeCategory
     :volumable_energy => [:volumePerTime, :energyConsumption],
     :volume           => [:volumePerTime],
     :weight_or_volume => [:massPerTime, :volumePerTime],
-    :flights          => [:flights]
+    :journeys         => [:journeys]
   }
 
   CATEGORY_TYPES_TO_UNITS = {
@@ -53,7 +53,7 @@ class AmeeCategory
     :massPerTime        => [Unit.kg, Unit.tonnes],
     :energyConsumption  => [Unit.kwh],
     :volumePerTime      => [Unit.litres],
-    :flights            => [Unit.flights]
+    :journeys           => [Unit.journeys]
   }
   
   # Create an AmeeCategory.  The initializer takes the following parameters:

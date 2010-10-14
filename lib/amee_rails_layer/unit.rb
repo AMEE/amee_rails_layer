@@ -11,7 +11,7 @@ class Unit
     :kwh => "kWh",
     :litres => "litres",
     :uk_gallons => "UK Gallons",
-    :flights => "return flights"
+    :journeys => "return flights"
   }
 
   AMEE_API_UNITS = {
@@ -22,7 +22,7 @@ class Unit
     :kwh => "kWh",
     :litres => "L",
     :uk_gallons => "gal_uk",
-    :flights => "nil"
+    :journeys => "nil"
   }
 
   # Creates a new Unit object from the symbol representing the unit (see class doc)
@@ -77,7 +77,7 @@ class Unit
     new(:uk_gallons)
   end
 
-  def self.flights
-    new(:flights)
+  def self.journeys
+    new(:journeys)
   end
 end
