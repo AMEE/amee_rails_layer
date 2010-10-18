@@ -6,10 +6,10 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "amee_rails_layer"
     gem.summary = %Q{An abstraction layer for building applications around the AMEE API}
-    gem.description = %Q{We need a longer description of your gem}
-    gem.email = "george.palmer@gmail.com"
-    gem.homepage = "http://github.com/georgepalmer/amee-abstraction-layer-gem"
-    gem.authors = ["George Palmer"]
+    gem.description = %Q{An abstraction layer for building applications around the AMEE API}
+    gem.email = "help@amee.com"
+    gem.homepage = "http://github.com/AMEE/amee_rails_layer"
+    gem.authors = ["George Palmer", "James Smith"]
     gem.add_development_dependency "amee-ruby", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
