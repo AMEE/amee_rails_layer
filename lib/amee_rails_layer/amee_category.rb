@@ -15,6 +15,7 @@ require 'amee_rails_layer/unit'
 # * :energy - the energy consumed (units available are kWh)
 # * :volumable_energy - the energy consumed specified either as a volume of fuel or energy unit 
 #   (units available are litres or kWh)
+# * :flights - the number of one-way flights
 #
 # The CATEGORY_TYPES constant maps these symbols to the corresponding field names used in amee to
 # store the amount of whatever is being specified.  So for a given data item path you must ensure
@@ -41,7 +42,8 @@ class AmeeCategory
     :energy           => [:energyConsumption],
     :volumable_energy => [:volumePerTime, :energyConsumption],
     :volume           => [:volumePerTime],
-    :weight_or_volume => [:massPerTime, :volumePerTime]
+    :weight_or_volume => [:massPerTime, :volumePerTime],
+    :journeys         => [:journeys]
   }
 
   CATEGORY_TYPES_TO_UNITS = {
@@ -51,14 +53,15 @@ class AmeeCategory
     :massPerTime        => [Unit.kg, Unit.tonnes],
     :energyConsumption  => [Unit.kwh],
     :volumePerTime      => [Unit.litres],
+    :journeys           => [Unit.journeys]
   }
   
   # Create an AmeeCategory.  The initializer takes the following parameters:
   # * name - a human readable name to refer to the category by.  This is not used in the storing or
   #   retrieving of data in amee but is useful for exposing in the view where a user chooses the 
   #   type they would like for the model
-  # * category_type - either :distance, :journey_distance, :weight, :energy or :volumable_energy.  See 
-  #   notes in class header for more on this
+  # * category_type - either :distance, :journey_distance, :weight, :energy, :volumable_energy or
+  #   :flights.  See notes in class header for more on this.
   # * profile_category_path - the path to the amee category - eg "/transport/car/generic/defra/bysize"
   # * options - any additional options required with the profile_category_path to make the path 
   #   refer to just one amee categorgy (typically these are passed in as a query string URL in amee 

@@ -10,7 +10,8 @@ class Unit
     :tonnes => "tonnes",
     :kwh => "kWh",
     :litres => "litres",
-    :uk_gallons => "UK Gallons"
+    :uk_gallons => "UK Gallons",
+    :journeys => "return flights"
   }
 
   AMEE_API_UNITS = {
@@ -20,7 +21,8 @@ class Unit
     :tonnes => "t",
     :kwh => "kWh",
     :litres => "L",
-    :uk_gallons => "gal_uk"
+    :uk_gallons => "gal_uk",
+    :journeys => "nil"
   }
 
   # Creates a new Unit object from the symbol representing the unit (see class doc)
@@ -73,5 +75,9 @@ class Unit
   
   def self.uk_gallons
     new(:uk_gallons)
+  end
+
+  def self.journeys
+    new(:journeys)
   end
 end
