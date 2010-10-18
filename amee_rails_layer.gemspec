@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.authors = ["George Palmer", "James Smith"]
   s.description = %q{An abstraction layer for building applications around the AMEE API}
   s.email = %q{help@amee.com}
-  s.date = %q{2010-10-14}
+  s.date = %q{2010-10-18}
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
