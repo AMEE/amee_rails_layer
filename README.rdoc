@@ -19,8 +19,7 @@ these would be:
   * units (string) - the units the amount field is in
   * amount (float) - the amount of the thing being recorded, eg 6 (kg), 9 (litres)
 with either:
-  * amee_profile (string) - the AMEE profile identifier under which all data is stored
-  * or profile_id (integer) - the record id of the model holding the amee_profile (and of course that model to have an amee_profile field)
+  * amee_profile (string) - the AMEE profile identifier under which all data is stored [optional]
 Extra fields may also be required depending on the options used.  See AmeeCarbonStore for full details
 
 == Usage
