@@ -65,8 +65,6 @@ module AmeeCarbonStore
           uniqueness_options = options[:profile] ? {:scope => "#{options[:profile]}_id".to_sym} : {}
           validates_uniqueness_of :name, uniqueness_options
         end
-        validates_format_of :name, :with => /\A[\w -]+\Z/, 
-          :message => "must be letters, numbers, spaces or underscores only"
         validates_length_of :name, :maximum => 250
       end
       if options[:singular_types]
