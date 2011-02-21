@@ -10,11 +10,8 @@
 # * units (string) - the units the amount field is in
 # * amount (float) - the amount of the thing being recorded, eg 6 (kg), 9 (litres)
 # * amee_profile (string) - optional.  The amee profile identifier under which all the data
-#   is stored.  Although this field is optional, either this or profile_id is required
-# * profile_id (integer) - optional.  Used when the model belongs_to a parent that has the
-#   amee_profile identifier.  Name is changed according to the :profile option passed into 
-#   the has_carbon_data_stored_in_amee.  Although this field is optional, either this or 
-#   amee_profile is required.
+#   is stored.  Although this field is optional, if it is not present then a Proc must be 
+#   passed to the has_carbon_data_stored_in_amee decleration evaluating to an amee profile
 # * repetitions (integer) - optional.  Used when the model object is composed of several
 #   repetitions - for example 6 x 3 miles would make the repetitions 6  
 # * start_date (date) - optional.  Used in combination with the has_date_range option on
@@ -28,29 +25,27 @@ module AmeeCarbonStore
 
   module ClassMethods
     # Class method that configures a class for storing carbon data in amee.  Options are as follows:
-    # * profile - if set will use this model (through a belongs_to relationship) to access the amee
-    #   profile to store the data under rather than the model itself.  Pass the model to use as symbol
-    #   - eg :user or :project.  Introduces the need for the profile_id field as described in header
-    #   and the referenced model must store the amee profile key under the field amee_profile (as 
-    #   would be provided by the has_amee_profile decleration)
+    # * profile - if set will use this Proc to access the amee profile used to store the data under 
+    #   rather than the model itself.  Pass a Proc that evaluates to the model containing the amee 
+    #   profile - eg Proc.new{|model| model.method}, Proc.new{|model| model.parent.method}.  The 
+    #   referenced model must store the amee profile key under the field amee_profile (as would be
+    #   provided by the has_amee_profile decleration)
     # * nameless - if set then automatically assign the name field so the user doesn't have to
     #   (still requires the name field in the database as a name must be set to store in amee)
     # * has_date_range - will check for the presence of a start_date and end_date on the object
-    #   and pass that through to AMEE to store with the data.  Will also check the name is unique 
-    #   given the dates unless used in conjunction with :nameless option (the two together are
-    #   therefore not recommended as it will be easy to create overlapping data).  Requires the 
-    #   start_date and end_date database fields as described in header.
+    #   and pass that through to AMEE to store with the data.  Requires the start_date and end_date
+    #   database fields as described in header.
     # * repetitions - allows repetitions of the data at a database level where AMEE doesn't support
     #   it natively.  For example multiple journeys can be setup with this option.  The value stored
     #   in AMEE will be the total for all journeys.  Requires the repetitions database field as 
     #   described in header.
-    # * singular_types - if using a structure where multiple types are available for a model and 
-    #   the type is stored in the field "#{model}_type", this option enforces that only one instance
-    #   of each type may exist in the database (for a given project if using a project structure)
     def has_carbon_data_stored_in_amee(options = {})
-      
       if options[:profile]
-        belongs_to options[:profile]
+        unless options[:profile].is_a?(Proc)
+          warn '[DEPRECIATION] AmeeRailsLayer will no longer automatically provide the profile association.  The relationship to the amee profile will also need to be defined as a Proc.'
+          belongs_to options[:profile]
+          options[:profile] = Proc.new{|model| model.send(options[:profile])}
+        end
       else
         has_amee_profile
       end
@@ -59,18 +54,10 @@ module AmeeCarbonStore
       validate_on_create :units_are_valid
       validates_presence_of :start_date, :end_date if options[:has_date_range]
       unless options[:nameless]
-        if options[:has_date_range]
-          validate :name_is_unique_given_date_range
-        else
-          uniqueness_options = options[:profile] ? {:scope => "#{options[:profile]}_id".to_sym} : {}
-          validates_uniqueness_of :name, uniqueness_options
-        end
-        validates_format_of :name, :with => /\A[\w -]+\Z/, 
-          :message => "must be letters, numbers, spaces or underscores only"
         validates_length_of :name, :maximum => 250
       end
       if options[:singular_types]
-        validate_on_create :maximum_one_instance_for_each_type
+        warn '[DEPRECIATION] singular_types option is no longer supported.'
       end
       if options[:repetitions]
         validates_numericality_of :repetitions, :only_integer => true
@@ -80,7 +67,7 @@ module AmeeCarbonStore
       before_update :update_amee
       after_destroy :delete_from_amee
       
-      write_inheritable_attribute(:amee_profile_class, options[:profile]) if options[:profile]
+      write_inheritable_attribute(:amee_profile_proc, options[:profile]) if options[:profile]
       write_inheritable_attribute(:repetitions, true) if options[:repetitions]
       write_inheritable_attribute(:nameless_entries, true) if options[:nameless]
       write_inheritable_attribute(:has_date_range, true) if options[:has_date_range]
@@ -145,26 +132,6 @@ module AmeeCarbonStore
     def units_are_valid
       errors.add("units", "are not valid") if amount_symbol.nil?
     end
-    
-    def name_is_unique_given_date_range
-      conditions = amee_profile_class_scoping.merge(:name => self.name)
-      self.class.find(:all, :conditions => conditions).each do |record|
-        next if record.id == self.id
-        unless (self.start_date < record.start_date && self.end_date <= record.start_date) ||
-               (self.start_date >= record.end_date && self.end_date > record.end_date)
-          errors.add_to_base("Entry already added covering dates within that range")
-          return false
-        end
-      end
-    end
-
-    def maximum_one_instance_for_each_type
-      model_type = "#{self.class.name.underscore}_type".to_sym
-      conditions = amee_profile_class_scoping.merge(model_type => send(model_type))
-      if self.class.send(:find, :first, :conditions => conditions)
-        errors.add_to_base "Only one #{amee_category.name} entry allowed"
-      end
-    end
 
     def add_to_amee
       profile = create_amee_profile
@@ -198,18 +165,13 @@ module AmeeCarbonStore
 
     # TODO can be renamed to amee_connection once ruby-amee rails lib merged in
     def connection_to_amee
-      method = self.class.read_inheritable_attribute(:amee_profile_class)
-      method ? send(method).amee_connection : amee_connection
+      profile_proc = self.class.read_inheritable_attribute(:amee_profile_proc)
+      profile_proc ? profile_proc.call(self).amee_connection : amee_connection
     end
     
     def amee_profile_path
-      method = self.class.read_inheritable_attribute(:amee_profile_class)
-      method ? "/profiles/#{send(method).amee_profile}" : "/profiles/#{amee_profile}"
-    end
-    
-    def amee_profile_class_scoping
-      method = self.class.read_inheritable_attribute(:amee_profile_class)
-      method ? {"#{method}_id".to_sym => send(method).id} : {}
+      profile_proc = self.class.read_inheritable_attribute(:amee_profile_proc)
+      profile_proc ? "/profiles/#{profile_proc.call(self).amee_profile}" : "/profiles/#{amee_profile}"
     end
 
     def amee_profile_item
