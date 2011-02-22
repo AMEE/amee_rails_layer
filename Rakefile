@@ -10,7 +10,7 @@ begin
     gem.email = "help@amee.com"
     gem.homepage = "http://github.com/AMEE/amee_rails_layer"
     gem.authors = ["George Palmer", "James Smith"]
-    gem.add_development_dependency "amee-ruby", ">= 0"
+    gem.add_development_dependency "amee-ruby", ">= 2.6"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
