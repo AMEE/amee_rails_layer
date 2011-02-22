@@ -141,9 +141,12 @@ module AmeeCarbonStore
     end
     
     def update_amee
-      result = AMEE::Profile::Item.update(connection_to_amee, amee_profile_item_path, 
-        :name => get_name, amount_symbol => get_amount, :get_item => true)
-      self.carbon_output_cache = result.total_amount
+      repetitions_changed = self.class.read_inheritable_attribute(:repetitions) && repetitions_changed?
+      if (name_changed? || units_changed? || amount_changed? || repetitions_changed)
+        result = AMEE::Profile::Item.update(connection_to_amee, amee_profile_item_path, 
+          :name => get_name, amount_symbol => get_amount, :get_item => true)
+        self.carbon_output_cache = result.total_amount
+      end
       return true
     end
 
