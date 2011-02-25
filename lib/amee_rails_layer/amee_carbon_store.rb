@@ -158,7 +158,8 @@ module AmeeCarbonStore
 
     def create_amee_profile
       options = {:name => get_name, amount_symbol => get_amount,
-        amount_unit_symbol => get_units, :get_item => true}
+        amount_unit_symbol => get_units, :get_item => true, 
+        :returnUnit => "kg", :returnPerUnit => "year"}
       if self.class.read_inheritable_attribute(:has_date_range)
         options.merge!(:start_date => self.start_date, :end_date => self.end_date)
       end
